@@ -25,3 +25,11 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.chart-container {
+  @apply p-5 bg-white shadow-md rounded-lg border border-gray-200;
+}
+
+.input-field {
+  @apply bg-white border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
