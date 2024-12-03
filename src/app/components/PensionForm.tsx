@@ -1,6 +1,7 @@
-import { Formik, Field, Form, ErrorMessage } from "formik";
+import { Box, Button, TextField } from "@mui/material";
+import { Field, Form, Formik } from "formik";
+import React from "react";
 import * as Yup from "yup";
-import { TextField, Button, Box } from "@mui/material";
 
 interface PensionFormValues {
   desiredIncome: number;
@@ -32,7 +33,9 @@ const validationSchema = Yup.object({
     .min(26, "Retirement age must be at least 26")
     .max(100, "Retirement age must be less than or equal to 100")
     .integer("Age must be an integer"),
-  extraPots: Yup.number().positive("Extra pots must be a positive amount"),
+  extraPots: Yup.number()
+    .min(0, "Extra pots must be a positive amount or zero")
+    .optional(),
 });
 
 const PensionForm = ({ onSubmit }: PensionFormProps) => {
@@ -43,17 +46,19 @@ const PensionForm = ({ onSubmit }: PensionFormProps) => {
         employerContribution: 0,
         personalContribution: 0,
         retirementAge: 65,
-        extraPots: undefined,
+        extraPots: 0,
       }}
+      validateOnMount
       validationSchema={validationSchema}
       onSubmit={(values) => {
         onSubmit(values);
       }}
     >
-      {({ isSubmitting, isValid, touched, errors }) => (
+      {({ isSubmitting, isValid, touched, errors, dirty }) => (
         <Form>
           <Box display="flex" flexDirection="column" gap={3}>
             <Field
+              className="input-field"
               name="desiredIncome"
               as={TextField}
               label="Desired Annual Income"
@@ -65,6 +70,7 @@ const PensionForm = ({ onSubmit }: PensionFormProps) => {
             />
 
             <Field
+              className="input-field"
               name="employerContribution"
               as={TextField}
               label="Employer Monthly Contribution"
@@ -80,6 +86,7 @@ const PensionForm = ({ onSubmit }: PensionFormProps) => {
             />
 
             <Field
+              className="input-field"
               name="personalContribution"
               as={TextField}
               label="Your Monthly Contribution"
@@ -95,6 +102,7 @@ const PensionForm = ({ onSubmit }: PensionFormProps) => {
             />
 
             <Field
+              className="input-field"
               name="retirementAge"
               as={TextField}
               label="Retirement Age"
@@ -105,6 +113,7 @@ const PensionForm = ({ onSubmit }: PensionFormProps) => {
               helperText={touched.retirementAge && errors.retirementAge}
             />
             <Field
+              className="input-field"
               name="extraPots"
               as={TextField}
               label="Extra pots"
@@ -119,13 +128,7 @@ const PensionForm = ({ onSubmit }: PensionFormProps) => {
               variant="contained"
               color="primary"
               fullWidth
-              disabled={
-                !isValid ||
-                !touched.desiredIncome ||
-                !touched.employerContribution ||
-                !touched.personalContribution ||
-                !touched.retirementAge
-              }
+              disabled={!isValid || !dirty || isSubmitting}
             >
               Calculate Pension Pot
             </Button>
